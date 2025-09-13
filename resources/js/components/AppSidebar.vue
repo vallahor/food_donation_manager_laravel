@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FamilyController from '@/actions/App/Http/Controllers/FamilyController';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -13,6 +14,11 @@ const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Families',
+        href: FamilyController.index(),
         icon: LayoutGrid,
     },
 ];

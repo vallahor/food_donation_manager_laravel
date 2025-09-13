@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Family;
+use App\Models\FoodPackage;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -23,5 +24,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Family::factory(30)->create();
+
+        FoodPackage::factory(5)->create();
     }
 }

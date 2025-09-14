@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Enums;
+
 enum Measurement: int
 {
     case KG = 1;
@@ -20,5 +22,13 @@ enum Measurement: int
     public static function fromInt(int $value): null|self
     {
         return self::tryFrom($value);
+    }
+
+    public static function all(): array
+    {
+        return array_map(fn($case) => [
+            'id' => $case->value,
+            'name' => $case->toString(),
+        ], self::cases());
     }
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\FamilyController;
 use App\Http\Controllers\FoodPackageController;
+use App\Http\Controllers\ItemController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -29,6 +30,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/packages/{food_package}/edit', [FoodPackageController::class, 'edit'])->name('package.edit');
     Route::put('/packages/{food_package}', [FoodPackageController::class, 'update'])->name('package.update');
     Route::delete('/packages/{food_package}', [FoodPackageController::class, 'destroy'])->name('package.destroy');
+
+    Route::get('/items', [ItemController::class, 'index'])->name('item.index');
+    Route::get('/items/new', [ItemController::class, 'create'])->name('item.create');
+    Route::post('/items', [ItemController::class, 'store'])->name('item.store');
+    Route::get('/items/{item}', [ItemController::class, 'show'])->name('item.show');
+    Route::get('/items/{item}/edit', [ItemController::class, 'edit'])->name('item.edit');
+    Route::put('/items/{item}', [ItemController::class, 'update'])->name('item.update');
+    Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('item.destroy');
 });
 
 require __DIR__ . '/settings.php';

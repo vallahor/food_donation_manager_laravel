@@ -10,15 +10,23 @@ import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, Link } from '@inertiajs/vue3';
 
+const { family, edit } = defineProps<{ family: any; edit: boolean }>();
+const form = edit ? FamilyController.update.form(family.data.id) : FamilyController.store.form();
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
         href: dashboard().url,
     },
+    {
+        title: 'Families',
+        href: FamilyController.index().url,
+    },
+    {
+        title: edit ? 'Edit' : 'Register',
+        href: edit ? FamilyController.edit(family.data.id).url : FamilyController.create().url,
+    },
 ];
-
-const { family, edit } = defineProps<{ family: any; edit: boolean }>();
-const form = edit ? FamilyController.update.form(family.data.id) : FamilyController.store.form();
 </script>
 
 <template>

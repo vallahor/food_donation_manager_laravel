@@ -1,21 +1,18 @@
 <script setup lang="ts">
-import FoodPackageController from '@/actions/App/Http/Controllers/FoodPackageController';
+import ItemController from '@/actions/App/Http/Controllers/ItemController';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
 
-const { food_package, items: listItems, edit } = defineProps<{ food_package: any; items: any; edit: boolean }>();
-const form = edit ? FoodPackageController.update.form(food_package.data.id) : FoodPackageController.store.form();
-
-const items = ref(food_package.data.items);
+const { item, edit, measurements } = defineProps<{ item: any; measurements: any; edit: boolean }>();
+const form = edit ? ItemController.update.form(item.data.id) : ItemController.store.form();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -23,12 +20,12 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: dashboard().url,
     },
     {
-        title: 'Packages',
-        href: FoodPackageController.index().url,
+        title: 'Items',
+        href: ItemController.index().url,
     },
     {
         title: edit ? 'Edit' : 'Register',
-        href: edit ? FoodPackageController.edit(food_package.data.id).url : FoodPackageController.create().url,
+        href: edit ? ItemController.edit(item.data.id).url : ItemController.create().url,
     },
 ];
 </script>
@@ -46,7 +43,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                         id="name"
                         name="name"
                         type="text"
-                        :default-value="food_package.data.name"
+                        :default-value="item.data.name"
                         autofocus
                         :tabindex="1"
                         autocomplete="name"
@@ -60,7 +57,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                         id="description"
                         name="description"
                         type="textarea"
-                        :default-value="food_package.data.description"
+                        :default-value="item.data.description"
                         required
                         autofocus
                         :tabindex="2"
@@ -70,18 +67,37 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <InputError :message="errors.description" />
                 </div>
 
-                <div v-for="item in items.data" :key="item.id">
-                    <Select :default-value="item.id">
+                <Label for="quantity">Quantity</Label>
+                <div class="flex justify-center gap-2">
+                    <div class="grid w-full gap-2">
+                        <Input
+                            id="quantity"
+                            name="quantity"
+                            type="number"
+                            :default-value="item.data.quantity"
+                            required
+                            autofocus
+                            :tabindex="3"
+                            autocomplete="quantity"
+                            placeholder="Quantity"
+                        />
+                        <InputError :message="errors.quantity" />
+                    </div>
+
+                    <Select id="measurement" name="measurement" :default-value="item.data.measurement" required>
                         <SelectTrigger>
-                            <SelectValue placeholder="Select an item" />
+                            <SelectValue placeholder="Select a measurement" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem v-for="listItem in listItems" :key="listItem.id" :value="listItem.id">
-                                {{ listItem.name }}
-                            </SelectItem>
+                            <SelectGroup>
+                                <SelectItem v-for="measurement in measurements" :key="measurement.id" :value="measurement.id">
+                                    {{ measurement.name }}
+                                </SelectItem>
+                            </SelectGroup>
                         </SelectContent>
                     </Select>
                 </div>
+                <InputError :message="errors.measurement" />
 
                 <div class="flex flex-col items-center gap-4">
                     <Transition
@@ -98,7 +114,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                         <span v-if="!edit">Create</span>
                     </Button>
                 </div>
-                <Link :href="FoodPackageController.index().url" variant="outline" :as="Button"> Back </Link>
+                <Link :href="ItemController.index().url" variant="outline" :as="Button"> Back </Link>
             </Form>
         </div>
     </AppLayout>

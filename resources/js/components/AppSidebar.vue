@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import FamilyController from '@/actions/App/Http/Controllers/FamilyController';
 import FoodPackageController from '@/actions/App/Http/Controllers/FoodPackageController';
+import ItemController from '@/actions/App/Http/Controllers/ItemController';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -25,6 +26,11 @@ const mainNavItems: NavItem[] = [
     {
         title: 'Packages',
         href: FoodPackageController.index(),
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Items',
+        href: ItemController.index(),
         icon: LayoutGrid,
     },
 ];

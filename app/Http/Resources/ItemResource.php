@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class FoodPackageResource extends JsonResource
+class ItemResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,10 +14,14 @@ class FoodPackageResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $isExisting = $this->resource && $this->resource->exists;
         return [
+            'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'items' => ItemResource::collection($this->whenLoaded($this->items)),
+            'quantity' => $this->quantity,
+            'measurement' => $this->measurement?->value,
+            'quantity_label' => $isExisting ? $this->quantity . ' ' . $this->measurement->toString() : '',
         ];
     }
 }

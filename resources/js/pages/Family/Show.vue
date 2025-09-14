@@ -1,17 +1,26 @@
 <script setup lang="ts">
+import FamilyController from '@/actions/App/Http/Controllers/FamilyController';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
+
+const { family } = defineProps<{ family: any }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
         href: dashboard().url,
     },
+    {
+        title: 'Families',
+        href: FamilyController.index().url,
+    },
+    {
+        title: family.data.first_name,
+        href: FamilyController.show(family.data.id).url,
+    },
 ];
-
-const { family } = defineProps<{ family: any }>();
 </script>
 
 <template>

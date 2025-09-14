@@ -6,6 +6,7 @@ use App\Http\Requests\StoreFoodPackageRequest;
 use App\Http\Requests\UpdateFoodPackageRequest;
 use App\Http\Resources\FoodPackageResource;
 use App\Models\FoodPackage;
+use App\Models\Item;
 use Inertia\Inertia;
 
 class FoodPackageController extends Controller
@@ -28,6 +29,7 @@ class FoodPackageController extends Controller
     {
         return Inertia::render('Package/Form', [
             'food_package' => FoodPackageResource::make(new FoodPackage()),
+            'items' => Item::all(),
             'edit' => false,
         ]);
     }
@@ -58,6 +60,7 @@ class FoodPackageController extends Controller
     {
         return Inertia::render('Package/Form', [
             'food_package' => FoodPackageResource::make($foodPackage),
+            'items' => Item::all(),
             'edit' => true,
         ]);
     }

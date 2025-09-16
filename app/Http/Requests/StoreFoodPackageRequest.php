@@ -24,6 +24,17 @@ class StoreFoodPackageRequest extends FormRequest
         return [
             'name' => ['required', 'string'],
             'description' => ['nullable', 'string'],
+            'items' => ['array'],
+            'items.*.id' => ['required', 'integer', 'exists:items,id'],
+            'items.*.package_quantity' => ['required', 'integer', 'min:1'],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'items.*.id.exists' => 'The selected item does not exist.',
+            'items.*.package_quantity.min' => 'The package quantity must be at least 1.',
         ];
     }
 }

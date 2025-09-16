@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class FoodPackageResource extends JsonResource
+class FoodPackageItemResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,8 +17,9 @@ class FoodPackageResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'description' => $this->description,
-            'items' => FoodPackageItemResource::collection($this->whenLoaded('items')),
+            'measurement' => $this->measurement?->value,
+            'package_quantity' => $this->pivot->package_quantity ?? 1,
+            'quantity_label' => $this->quantity . ' ' . $this->measurement->toString(),
         ];
     }
 }

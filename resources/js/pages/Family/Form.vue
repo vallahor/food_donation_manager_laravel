@@ -34,7 +34,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col items-center gap-4 overflow-x-auto rounded-xl p-4">
-            <Form v-bind="form" v-slot="{ errors, processing, recentlySuccessful }" class="flex w-2/6 flex-col gap-6">
+            <Form v-bind="form" v-slot="{ errors, processing, recentlySuccessful }" class="flex w-4/6 flex-col gap-6">
                 <h2>Representant</h2>
                 <div class="flex w-full gap-3">
                     <div class="grid w-full gap-2">

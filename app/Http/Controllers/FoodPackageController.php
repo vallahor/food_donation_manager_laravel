@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreFoodPackageRequest;
 use App\Http\Requests\UpdateFoodPackageRequest;
 use App\Http\Resources\FoodPackageResource;
+use App\Http\Resources\ItemResource;
 use App\Models\FoodPackage;
 use App\Models\Item;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class FoodPackageController extends Controller
@@ -29,7 +31,7 @@ class FoodPackageController extends Controller
     {
         return Inertia::render('Package/Form', [
             'food_package' => FoodPackageResource::make(new FoodPackage()),
-            'items' => Item::all(),
+            'items' => ItemResource::collection(Item::all()),
             'edit' => false,
         ]);
     }
@@ -39,7 +41,21 @@ class FoodPackageController extends Controller
      */
     public function store(StoreFoodPackageRequest $request)
     {
-        FoodPackage::create($request->validated());
+        DB::transaction(function () use ($request) {
+            $data = $request->validated();
+
+            $items = $data['items'];
+            unset($data['items']);
+
+            $package = FoodPackage::create($data);
+
+            $pivotData = collect($items)->mapWithKeys(fn($item) => [
+                $item['id'] => ['package_quantity' => $item['package_quantity'] ?? 1],
+            ]);
+
+            $package->items()->attach($pivotData);
+        });
+
         return to_route('package.index');
     }
 
@@ -49,7 +65,7 @@ class FoodPackageController extends Controller
     public function show(FoodPackage $foodPackage)
     {
         return Inertia::render('Package/Show', [
-            'food_package' => FoodPackageResource::make($foodPackage),
+            'food_package' => FoodPackageResource::make($foodPackage->load('items')),
         ]);
     }
 
@@ -59,8 +75,8 @@ class FoodPackageController extends Controller
     public function edit(FoodPackage $foodPackage)
     {
         return Inertia::render('Package/Form', [
-            'food_package' => FoodPackageResource::make($foodPackage),
-            'items' => Item::all(),
+            'food_package' => FoodPackageResource::make($foodPackage->load('items')),
+            'items' => ItemResource::collection(Item::all()),
             'edit' => true,
         ]);
     }
@@ -70,7 +86,20 @@ class FoodPackageController extends Controller
      */
     public function update(UpdateFoodPackageRequest $request, FoodPackage $foodPackage)
     {
-        $foodPackage->update($request->validated());
+        DB::transaction(function () use ($request, $foodPackage) {
+            $data = $request->validated();
+
+            $items = $data['items'] ?? [];
+            unset($data['items']);
+
+            $foodPackage->update($data);
+
+            $pivotData = collect($items)->mapWithKeys(fn($item) => [
+                $item['id'] => ['package_quantity' => $item['package_quantity'] ?? 1],
+            ]);
+
+            $foodPackage->items()->sync($pivotData);
+        });
 
         return back();
     }

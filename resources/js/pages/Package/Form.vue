@@ -4,7 +4,7 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
@@ -15,7 +15,19 @@ import { ref } from 'vue';
 const { food_package, items: listItems, edit } = defineProps<{ food_package: any; items: any; edit: boolean }>();
 const form = edit ? FoodPackageController.update.form(food_package.data.id) : FoodPackageController.store.form();
 
-const items = ref(food_package.data.items);
+const items = ref(food_package.data.items ?? []);
+const selectedItem = ref(null);
+
+function addItem() {
+    if (!selectedItem.value) return;
+
+    const found = listItems.data.find((i: any) => i.id === selectedItem.value);
+    if (found && !items.value.find((i: any) => i.id === found.id)) {
+        items.value.push(found);
+    }
+
+    selectedItem.value = null;
+}
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -38,7 +50,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col items-center gap-4 overflow-x-auto rounded-xl p-4">
-            <Form v-bind="form" v-slot="{ errors, processing, recentlySuccessful }" class="flex w-2/6 flex-col gap-6">
+            <Form v-bind="form" v-slot="{ errors, processing, recentlySuccessful }" class="flex w-4/6 flex-col gap-6">
                 <h2>Food Package</h2>
                 <div class="grid w-full gap-2">
                     <Label for="name">name</Label>
@@ -61,7 +73,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                         name="description"
                         type="textarea"
                         :default-value="food_package.data.description"
-                        required
                         autofocus
                         :tabindex="2"
                         autocomplete="description"
@@ -70,17 +81,43 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <InputError :message="errors.description" />
                 </div>
 
-                <div v-for="item in items.data" :key="item.id">
-                    <Select :default-value="item.id">
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select an item" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem v-for="listItem in listItems" :key="listItem.id" :value="listItem.id">
-                                {{ listItem.name }}
-                            </SelectItem>
-                        </SelectContent>
-                    </Select>
+                <h2>Packages Items</h2>
+                <div class="flex w-full flex-col gap-4">
+                    <div class="flex w-full gap-2">
+                        <Select v-model="selectedItem" class="flex-1">
+                            <SelectTrigger class="w-full">
+                                <SelectValue placeholder="Select an item" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectItem v-for="item in listItems.data" :key="item.id" :value="item.id">
+                                        {{ item.name }}
+                                    </SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+
+                        <Button @click.prevent="addItem">Add</Button>
+                    </div>
+
+                    <div v-for="(item, index) in items" :key="item.id">
+                        <div class="flex items-center gap-2">
+                            <span class="flex-1">{{ item.name }}</span>
+                            <span>{{ item.quantity_label }}</span>
+
+                            <Input
+                                type="number"
+                                v-model.number="items[index].package_quantity"
+                                :default-value="items[index].package_quantity"
+                                :name="`items[${index}][package_quantity]`"
+                                class="w-20"
+                            />
+                            <Input type="hidden" v-model="items[index].id" :name="`items[${index}][id]`" />
+
+                            <Button variant="destructive" @click.prevent="items.splice(index, 1)">Remove</Button>
+                        </div>
+                        <InputError :message="errors[`items.${index}.package_quantity`]" />
+                    </div>
                 </div>
 
                 <div class="flex flex-col items-center gap-4">

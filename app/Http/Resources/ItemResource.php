@@ -21,6 +21,7 @@ class ItemResource extends JsonResource
             'description' => $this->description,
             'quantity' => $this->quantity,
             'measurement' => $this->measurement?->value,
+            'package_quantity' => $this->pivot->package_quantity ?? 1,
             'quantity_label' => $isExisting ? $this->quantity . ' ' . $this->measurement->toString() : '',
         ];
     }

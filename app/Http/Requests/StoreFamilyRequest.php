@@ -28,6 +28,8 @@ class StoreFamilyRequest extends FormRequest
             'street_name' => ['nullable', 'string'],
             'zipcode' => ['nullable', 'string', 'digits:9'],
             'phone_number' => ['nullable', 'string', 'digits:11'],
+            'food_packages' => ['array'],
+            'food_packages.*.id' => ['required', 'integer', 'exists:food_packages,id'],
         ];
     }
 

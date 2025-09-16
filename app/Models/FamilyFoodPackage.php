@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class FoodPackageItem extends Pivot
+class FamilyFoodPackage extends Pivot
 {
+    //
 }
